@@ -1,0 +1,33 @@
+:root{--blue:#4285F4;--red:#EA4335;--yellow:#FBBC04;--green:#34A853;--ink:#202124;--mute:#5f6368;--line:#dadce0;--bg:#f8f9fa;--card:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'Google Sans','Product Sans',Outfit,system-ui,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 56px}
+header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 20px}.brand{font-weight:600;display:flex;gap:8px;align-items:center}
+.code{color:var(--blue);font-weight:700;letter-spacing:-1px}small{color:var(--mute)}
+.dots{display:inline-flex;gap:4px}.dots i{width:8px;height:8px;border-radius:50%}.dots i:nth-child(1){background:var(--blue)}.dots i:nth-child(2){background:var(--red)}.dots i:nth-child(3){background:var(--yellow)}.dots i:nth-child(4){background:var(--green)}
+.hero{padding:8px 0 24px}h1{font-size:clamp(28px,6vw,42px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em}.when{color:var(--mute);margin:0 0 20px}
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.count div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 4px;text-align:center}
+.count div:nth-child(1){border-top:4px solid var(--blue)}.count div:nth-child(2){border-top:4px solid var(--red)}.count div:nth-child(3){border-top:4px solid var(--yellow)}.count div:nth-child(4){border-top:4px solid var(--green)}
+.count b{display:block;font-size:28px;font-variant-numeric:tabular-nums}.count span{font-size:12px;color:var(--mute)}
+.nums{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px;color:var(--mute)}.nums b{color:var(--ink);font-size:20px}
+.nums .green b{color:var(--green)}.nums .yellow b{color:#b06f00}.nums .red b{color:var(--red)}
+.bar{height:10px;background:#e8eaed;border-radius:99px;overflow:hidden}.bar div{height:100%;border-radius:99px;transition:width .6s ease}
+.bar .green{background:var(--green)}.bar .yellow{background:var(--yellow)}.bar .red{background:var(--red)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(60,64,67,.15)}
+h2{margin:0 0 16px;font-size:22px}form{display:grid;gap:16px}.field{display:grid;gap:6px;font-weight:500}.field span,legend{font-size:14px}
+input,select{font:inherit;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+input:focus,select:focus,button:focus-visible{outline:3px solid #aecbfa;border-color:var(--blue)}
+em{color:var(--red);font-size:13px;font-style:normal;font-weight:400}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+fieldset{border:0;padding:0;margin:0;display:flex;gap:10px;flex-wrap:wrap}legend{font-weight:500;margin-bottom:6px;padding:0}
+.pill{flex:1;min-width:140px;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;font-weight:500}
+.pill input{width:auto}.pill.on{border-color:var(--blue);background:#e8f0fe}
+button{font:inherit;cursor:pointer}.primary{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:14px;font-weight:600;transition:transform .1s,background .2s}
+.primary:hover:not(:disabled){background:#1a73e8}.primary:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.55;cursor:not-allowed}.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.note{border-radius:10px;padding:12px;margin:0;font-size:14px;background:#e8f0fe}
+.note.warn{background:#fef7e0}.note.bad{background:#fce8e6;color:#a50e0e}.muted{color:var(--mute);font-size:14px}.state{text-align:center;display:grid;gap:10px;justify-items:center}
+.state p{margin:0;max-width:46ch}.tick{width:64px;height:64px;border-radius:50%;background:var(--green);color:#fff;font-size:34px;display:grid;place-items:center;animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+.spin{width:32px;height:32px;border:4px solid #e8eaed;border-top-color:var(--blue);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}@keyframes pop{from{transform:scale(0)}}
+@media(max-width:480px){.two{grid-template-columns:1fr}.card{padding:18px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

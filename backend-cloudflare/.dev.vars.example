@@ -1,0 +1,8 @@
+# Copy this file to .dev.vars and fill it locally. Never commit .dev.vars.
+FIREBASE_SERVICE_ACCOUNT=
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+MAIL_FROM=
+

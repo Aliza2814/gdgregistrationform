@@ -1,0 +1,14 @@
+name = "gdg-registration-worker"
+main = "src/worker.js"
+compatibility_date = "2026-08-04"
+
+[vars]
+FRONTEND_URL = "http://localhost:5175"
+ALLOWED_ORIGINS = "http://localhost:5175,http://127.0.0.1:5175"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gdg-registration"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+

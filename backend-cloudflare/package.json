@@ -1,0 +1,22 @@
+{
+  "name": "gdg-registration-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "d1:local:migrate": "wrangler d1 migrations apply gdg-registration --local",
+    "d1:local:seed": "wrangler d1 execute gdg-registration --local --file=./scripts/seed-local.sql"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.1",
+    "nodemailer": "^10.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.8.5",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.165.0"
+  }
+}
+
