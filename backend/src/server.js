@@ -1,12 +1,57 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import admin from 'firebase-admin';
-import nodemailer from 'nodemailer';
 import { createApp } from './app.js';
+import { sendVerificationEmail } from './mailer.js';
 
-admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
-const mail = nodemailer.createTransport({ host: process.env.SMTP_HOST, port: +process.env.SMTP_PORT, secure: +process.env.SMTP_PORT === 465,
-  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
+function requiredEnv(name) {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} must be configured.`);
+  return value;
+}
+
+const mongoUri = requiredEnv('MONGODB_URI');
+const frontendUrl = requiredEnv('FRONTEND_URL').replace(/\/+$/, '');
+const frontend = new URL(frontendUrl);
+if (frontend.pathname !== '/') throw new Error('FRONTEND_URL must be an origin without a path.');
+if (process.env.NODE_ENV === 'production' && frontend.protocol !== 'https:') {
+  throw new Error('FRONTEND_URL must use HTTPS in production.');
+}
+if (process.env.NODE_ENV === 'production') {
+  let mongoHost;
+  try {
+    mongoHost = new URL(mongoUri).hostname;
+  } catch {
+    throw new Error('MONGODB_URI must be a valid MongoDB connection URL.');
+  }
+  if (['localhost', '127.0.0.1', '::1'].includes(mongoHost)) {
+    throw new Error('MONGODB_URI must point to a remote database in production; localhost is not available on Render.');
+  }
+}
+
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(requiredEnv('FIREBASE_SERVICE_ACCOUNT'));
+} catch (error) {
+  if (error.message === 'FIREBASE_SERVICE_ACCOUNT must be configured.') throw error;
+  throw new Error('FIREBASE_SERVICE_ACCOUNT must contain valid JSON.');
+}
+if (!serviceAccount.project_id || !serviceAccount.client_email || !serviceAccount.private_key) {
+  throw new Error('FIREBASE_SERVICE_ACCOUNT is missing required fields.');
+}
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+
+const emailProvider = process.env.EMAIL_PROVIDER || 'smtp';
+if (emailProvider === 'resend') {
+  requiredEnv('RESEND_API_KEY');
+  requiredEnv('MAIL_FROM');
+} else if (emailProvider === 'smtp') {
+  requiredEnv('SMTP_USER');
+  requiredEnv('SMTP_PASS');
+  requiredEnv('MAIL_FROM');
+} else {
+  throw new Error('EMAIL_PROVIDER must be smtp or resend.');
+}
 
 // Event is owned by the Admin Panel team. Align this schema with theirs (see API-CONTRACT in README).
 const Event = mongoose.model('Event', new mongoose.Schema({ name: String, venue: String, startsAt: Date, endsAt: Date,
@@ -30,13 +75,11 @@ const api = createApp({
   Pending,
   verifyIdToken: (token) => admin.auth().verifyIdToken(token),
   generateSignInLink: (email, url) => admin.auth().generateSignInWithEmailLink(email, { url, handleCodeInApp: true }),
-  sendVerificationEmail: ({ email, event, html }) => mail.sendMail({
-    from: process.env.MAIL_FROM, to: email, subject: `Verify your email for ${event.name}`, html,
-  }),
-  frontendUrl: process.env.FRONTEND_URL,
+  sendVerificationEmail: (message) => sendVerificationEmail(message, process.env),
+  frontendUrl,
 });
 
-await mongoose.connect(process.env.MONGODB_URI);
+await mongoose.connect(mongoUri);
 await Registration.init();
 await Pending.init();
-api.listen(process.env.PORT || 4000, () => console.log('API ready'));
+api.listen(process.env.PORT || 4000, '0.0.0.0', () => console.log('API ready'));
