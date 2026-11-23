@@ -4,6 +4,19 @@ function providerError(message, code, status) {
   return Object.assign(new Error(message), { code, ...(status ? { status } : {}) });
 }
 
+function safeProviderDetails(payload, status) {
+  if (!payload || typeof payload !== 'object') {
+    return { providerCode: `HTTP_${status}`, providerMessage: null };
+  }
+  const rawCode = payload.name || payload.code || payload.error?.code;
+  const rawMessage = payload.message || payload.error?.message;
+  const providerCode = typeof rawCode === 'string' ? rawCode.slice(0, 120) : `HTTP_${status}`;
+  const providerMessage = typeof rawMessage === 'string'
+    ? rawMessage.replace(/\b(re_[A-Za-z0-9_-]+|Bearer\s+\S+)\b/gi, '[REDACTED]').slice(0, 300)
+    : null;
+  return { providerCode, providerMessage };
+}
+
 async function sendWithResend({ email, event, html }, env, fetchImpl) {
   if (!env.RESEND_API_KEY || !env.MAIL_FROM) {
     throw providerError('Resend API key and sender are required.', 'EMAIL_PROVIDER_NOT_CONFIGURED');
@@ -38,7 +51,17 @@ async function sendWithResend({ email, event, html }, env, fetchImpl) {
   }
 
   if (!response.ok) {
-    throw providerError('Email provider rejected the message.', 'EMAIL_PROVIDER_REJECTED', response.status);
+    let payload = null;
+    try {
+      payload = await response.clone().json();
+    } catch {
+      payload = null;
+    }
+    const details = safeProviderDetails(payload, response.status);
+    const error = providerError('Email provider rejected the message.', 'EMAIL_PROVIDER_REJECTED', response.status);
+    error.providerCode = details.providerCode;
+    error.providerMessage = details.providerMessage;
+    throw error;
   }
 
   let result;

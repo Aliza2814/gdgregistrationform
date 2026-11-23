@@ -24,6 +24,7 @@ const invalidTokenCodes = new Set([
 export function createApp({ Event, Registration, Pending, verifyIdToken, generateSignInLink, sendVerificationEmail,
   frontendUrl }) {
   const app = express();
+  app.set('trust proxy', 1);
   app.use(cors({ origin: frontendUrl }), express.json({ limit: '10kb' }));
 
   const limit = (max) => rateLimit({ windowMs: 10 * 60000, max, standardHeaders: true, legacyHeaders: false });
@@ -91,7 +92,13 @@ export function createApp({ Event, Registration, Pending, verifyIdToken, generat
       } catch (cleanupError) {
         console.error('[pending] cleanup failed after email error', { eventId: ev.id, code: cleanupError.code || 'UNKNOWN' });
       }
-      console.error('[email] verification delivery failed', { eventId: ev.id, code: err.code || 'UNKNOWN' });
+      console.error('[email] verification delivery failed', {
+        eventId: ev.id,
+        code: err.code || 'UNKNOWN',
+        providerCode: err.providerCode || null,
+        providerMessage: err.providerMessage || null,
+        status: err.status || null,
+      });
       return res.status(502).json({ code: 'EMAIL_FAILED' });
     }
     res.json({ ok: true, cooldown: 60 });
@@ -179,6 +186,12 @@ export function createApp({ Event, Registration, Pending, verifyIdToken, generat
   }));
 
   app.use((err, req, res, next) => {
+    if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+      return res.status(400).json({ code: 'INVALID_JSON' });
+    }
+    if (err.type === 'entity.too.large') {
+      return res.status(413).json({ code: 'PAYLOAD_TOO_LARGE' });
+    }
     console.error('[api] request failed', { path: req.path, code: err.code || 'UNKNOWN' });
     if (res.headersSent) return next(err);
     res.status(500).json({ code: 'SERVER' });

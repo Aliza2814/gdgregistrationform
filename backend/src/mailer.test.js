@@ -48,10 +48,15 @@ test('Resend HTTP failures do not return provider response content', async () =>
       EMAIL_PROVIDER: 'resend',
       RESEND_API_KEY: 'test-api-key',
       MAIL_FROM: 'GDG <verified@example.com>',
-    }, async () => new Response('private provider response', { status: 403 })),
+    }, async () => Response.json({
+      name: 'validation_error',
+      message: 'The from address is not verified',
+    }, { status: 403 })),
     (error) => error.code === 'EMAIL_PROVIDER_REJECTED'
       && error.status === 403
-      && !error.message.includes('private provider response'),
+      && error.providerCode === 'validation_error'
+      && error.providerMessage === 'The from address is not verified'
+      && !error.message.includes('verified@example.com'),
   );
 });
 

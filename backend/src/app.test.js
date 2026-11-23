@@ -98,6 +98,18 @@ async function call(base, eventId, endpoint, body = {}) {
   return { status: response.status, body: await response.json() };
 }
 
+test('malformed JSON returns a JSON 400 response', async (t) => {
+  const state = fixture();
+  const base = await listen(t, state);
+  const response = await fetch(`${base}/api/events/${state.eventId}/registrations/start`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{"name":',
+  });
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { code: 'INVALID_JSON' });
+});
+
 const form = (email, accommodation = 'Hosteler') => ({
   rollNumber: '2525BCS001', name: 'Student Example', email, year: '2nd Year', department: 'CSE', accommodation,
 });
