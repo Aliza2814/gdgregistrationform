@@ -99,7 +99,7 @@ async function call(base, eventId, endpoint, body = {}) {
 }
 
 const form = (email, accommodation = 'Hosteler') => ({
-  name: 'Student Example', email, year: '2nd Year', department: 'CSE', accommodation,
+  rollNumber: '2525BCS001', name: 'Student Example', email, year: '2nd Year', department: 'CSE', accommodation,
 });
 const start = (base, eventId, values) => call(base, eventId, 'start', values);
 const confirm = (base, eventId, idToken = validId) => call(base, eventId, 'confirm', { idToken });

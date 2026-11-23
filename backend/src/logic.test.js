@@ -11,12 +11,13 @@ test('day scholar rule', () => {
   assert.ok(!ok(ist(10), ist(17)));
 });
 test('validation', () => {
-  const bad = validate({ name: ' ', email: 'a@gmail.com' });
-  assert.ok(bad.errors.name && bad.errors.email && bad.errors.year);
+  const bad = validate({ rollNumber: ' ', name: ' ', email: 'a@gmail.com' });
+  assert.ok(bad.errors.rollNumber && bad.errors.name && bad.errors.email && bad.errors.year);
   for (const email of ['person@gmail.com', 'person@chitkara.edu.in.evil', 'person@@chitkara.edu.in']) {
-    assert.ok(validate({ name: 'Test User', email, year: '1st Year', department: 'CSE', accommodation: 'Hosteler' }).errors.email);
+    assert.ok(validate({ rollNumber: '2525BCS001', name: 'Test User', email, year: '1st Year', department: 'CSE', accommodation: 'Hosteler' }).errors.email);
   }
-  const good = validate({ name: '  Aliza  K ', email: ' ALIZA@Chitkara.edu.in ', year: '2nd Year', department: 'CSE', accommodation: 'Hosteler' });
+  const good = validate({ rollNumber: ' 2525bcs001 ', name: '  Aliza  K ', email: ' ALIZA@Chitkara.edu.in ', year: '2nd Year', department: 'CSE', accommodation: 'Hosteler' });
   assert.deepEqual(good.errors, {});
   assert.equal(good.values.email, 'aliza@chitkara.edu.in');
+  assert.equal(good.values.rollNumber, '2525BCS001');
 });

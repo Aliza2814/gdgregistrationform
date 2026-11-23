@@ -1,5 +1,8 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
+import { fileURLToPath } from "node:url";
 import mongoose from "mongoose";
+
+loadEnv({ path: fileURLToPath(new URL("./.env", import.meta.url)) });
 
 const schema = new mongoose.Schema({
   name: String,
@@ -20,9 +23,9 @@ try {
   const event = await Event.create({
     name: "GDG Email Verification Test",
     venue: "Online Test Environment",
-    startsAt: new Date("2026-11-20T04:30:00.000Z"),
-    endsAt: new Date("2026-11-20T05:30:00.000Z"),
-    deadline: new Date("2026-11-19T18:29:00.000Z"),
+    startsAt: new Date("2026-11-30T04:30:00.000Z"),
+    endsAt: new Date("2026-11-30T05:30:00.000Z"),
+    deadline: new Date("2026-11-29T18:29:00.000Z"),
     capacity: 10,
     registeredCount: 0,
     registrationOpen: true

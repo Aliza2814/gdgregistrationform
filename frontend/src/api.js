@@ -1,4 +1,6 @@
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const configuredBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const productionFallback = 'https://gdgregistrationform.onrender.com';
+const BASE = configuredBase || (import.meta.env.PROD ? productionFallback : '');
 const REQUEST_TIMEOUT_MS = 15000;
 const real = async (path, opts) => {
   const controller = new AbortController();

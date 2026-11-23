@@ -1,3 +1,1 @@
-{"name":"gdg-registration-api","type":"module","private":true,
-"scripts":{"start":"node src/server.js","test":"node --test"},
-"dependencies":{"cors":"^2.8.5","dotenv":"^16.4.5","express":"^4.19.2","express-rate-limit":"^7.4.0","firebase-admin":"^12.5.0","mongoose":"^8.6.0","nodemailer":"^6.9.15"}}
+{"name":"gdg-registration-api","type":"module","private":true,"scripts":{"start":"node src/server.js","test":"node --test"},"dependencies":{"cors":"^2.8.5","dotenv":"^16.6.1","express":"^4.19.2","express-rate-limit":"^7.4.0","firebase-admin":"^14.5.1","mongoose":"^8.6.0","nodemailer":"^10.6.1"}}

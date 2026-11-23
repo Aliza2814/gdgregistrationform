@@ -2,6 +2,7 @@
 export const DOMAIN = '@chitkara.edu.in';
 export function validate(v) {
   const e = {};
+  if (!/^[A-Za-z0-9-]{4,20}$/.test(v.rollNumber.trim())) e.rollNumber = 'Enter a valid roll number (4-20 letters or numbers).';
   if (v.name.trim().length < 2) e.name = 'Enter your full name.';
   const email = v.email.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+$/.test(email) || !email.endsWith(DOMAIN)) e.email = `Use your college email ending in ${DOMAIN}.`;

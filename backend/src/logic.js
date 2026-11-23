@@ -4,9 +4,11 @@ export const normalizeEmail = (e) => String(e || '').trim().toLowerCase();
 const clean = (s) => String(s || '').trim().replace(/\s+/g, ' ');
 
 export function validate(b) {
-  const v = { name: clean(b.name), email: normalizeEmail(b.email), year: clean(b.year),
+  const v = { rollNumber: clean(b.rollNumber).toUpperCase(), name: clean(b.name), email: normalizeEmail(b.email), year: clean(b.year),
     department: clean(b.department), accommodation: clean(b.accommodation) };
   const errors = {};
+  if (!/^[A-Za-z0-9-]{4,20}$/.test(v.rollNumber))
+    errors.rollNumber = 'Enter a valid roll number (4-20 letters or numbers).';
   if (v.name.length < 2) errors.name = 'Enter your full name.';
   if (!/^[^\s@]+@[^\s@]+$/.test(v.email) || !v.email.endsWith(EMAIL_DOMAIN))
     errors.email = `Use your college email ending in ${EMAIL_DOMAIN}.`;

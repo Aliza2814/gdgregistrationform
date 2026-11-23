@@ -5,7 +5,7 @@ import { validate, parts } from './util.js';
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 const DEPTS = ['CSE', 'CSE (AI/ML)', 'IT', 'ECE', 'EEE', 'Mechanical', 'Civil', 'Biotechnology', 'Other'];
 const DRAFT_KEY = 'gdg_reg_draft';
-const EMPTY_FORM = { name: '', email: '', year: '', department: '', accommodation: '' };
+const EMPTY_FORM = { rollNumber: '', name: '', email: '', year: '', department: '', accommodation: '' };
 const MSG = {
   DUPLICATE: 'Already registered. This email has already been used for this event.',
   FULL: 'All seats were taken. Registration is now full.',
@@ -83,6 +83,7 @@ function Form({ ev, onSent }) {
     finally { setBusy(false); }
   }
   return <form onSubmit={submit} noValidate>
+    <Field label="Roll number" error={err.rollNumber}><input value={v.rollNumber} onChange={set('rollNumber')} placeholder="e.g. 2525BCS001" autoCapitalize="characters" /></Field>
     <Field label="Full name" error={err.name}><input value={v.name} onChange={set('name')} autoComplete="name" /></Field>
     <Field label="College email" error={err.email}><input type="email" value={v.email} onChange={set('email')} placeholder="name@chitkara.edu.in" autoComplete="email" /></Field>
     <div className="two">

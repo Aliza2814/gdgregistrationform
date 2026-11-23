@@ -1,8 +1,12 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+import { fileURLToPath } from 'node:url';
 import mongoose from 'mongoose';
-import admin from 'firebase-admin';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { createApp } from './app.js';
 import { sendVerificationEmail } from './mailer.js';
+
+loadEnv({ path: fileURLToPath(new URL('../.env', import.meta.url)) });
 
 function requiredEnv(name) {
   const value = process.env[name]?.trim();
@@ -39,7 +43,9 @@ try {
 if (!serviceAccount.project_id || !serviceAccount.client_email || !serviceAccount.private_key) {
   throw new Error('FIREBASE_SERVICE_ACCOUNT is missing required fields.');
 }
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+initializeApp({ credential: cert(serviceAccount) });
+
+const firebaseAuth = getAuth();
 
 const emailProvider = process.env.EMAIL_PROVIDER || 'smtp';
 if (emailProvider === 'resend') {
@@ -57,7 +63,7 @@ if (emailProvider === 'resend') {
 const Event = mongoose.model('Event', new mongoose.Schema({ name: String, venue: String, startsAt: Date, endsAt: Date,
   deadline: Date, capacity: Number, registeredCount: { type: Number, default: 0 }, registrationOpen: { type: Boolean, default: true } }));
 const regSchema = new mongoose.Schema({ eventId: mongoose.Types.ObjectId,
-  email: { type: String, required: true, trim: true, lowercase: true }, name: String, year: String,
+  rollNumber: String, email: { type: String, required: true, trim: true, lowercase: true }, name: String, year: String,
   department: String, accommodation: String, confirmedAt: { type: Date, default: Date.now } });
 regSchema.index({ eventId: 1, email: 1 }, { unique: true }); // one registration per email per event
 const Registration = mongoose.model('Registration', regSchema);
@@ -73,8 +79,8 @@ const api = createApp({
   Event,
   Registration,
   Pending,
-  verifyIdToken: (token) => admin.auth().verifyIdToken(token),
-  generateSignInLink: (email, url) => admin.auth().generateSignInWithEmailLink(email, { url, handleCodeInApp: true }),
+  verifyIdToken: (token) => firebaseAuth.verifyIdToken(token),
+  generateSignInLink: (email, url) => firebaseAuth.generateSignInWithEmailLink(email, { url, handleCodeInApp: true }),
   sendVerificationEmail: (message) => sendVerificationEmail(message, process.env),
   frontendUrl,
 });
